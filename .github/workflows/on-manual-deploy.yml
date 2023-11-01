@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch:
+
+name: on-manual-deploy
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+   Verify:
+    name: Verify
+    uses: ./.github/workflows/verify.yml
+    secrets: inherit
+    with:
+      environment: dev

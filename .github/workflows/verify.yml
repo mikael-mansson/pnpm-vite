@@ -1,0 +1,36 @@
+# This workflow tests the code by linting and smoke testing.
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+name: Verify
+
+jobs:
+  Verify:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      # Setup environment
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: ${{ github.event.pull_request.commits }}
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - name: Setup Node
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      # Run hygiene controls
+      - name: Pnpm
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint
